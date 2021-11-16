@@ -1,0 +1,49 @@
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id                  Int                 @id @unique @default(autoincrement())
+  nome                String              @db.VarChar(100)
+  email               String              @unique @db.VarChar(100)
+  senha               String              @db.VarChar(100)
+  ativo               Boolean?            @default(true)
+  atendente           Atendente?
+  cliente             Cliente?
+  id_grupo            Int
+  grupo               Grupo[]             @relation(fields: [id_grupo], references: [id], onDelete: NoAction, onUpdate: NoAction)  
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+}   
+    
+    
+model Cliente {   
+    id                  Int               @id @unique @default(autoincrement())
+    id_usuario          Int
+    cpf                 String?    
+    usuario             Usuario           @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)  
+}   
+    
+    
+model Atendente {   
+  id                  Int            @id @unique @default(autoincrement())        
+  id_usuario          Int
+  cpf                 String?  
+  usuario             Usuario           @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Grupo {   
+id                    Int                   @id @unique @default(autoincrement())
+  nome                String                @db.VarChar(100)
+  usuario             Usuario[]
+}   
